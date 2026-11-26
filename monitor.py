@@ -469,7 +469,7 @@ def summarize(events: list[dict]) -> None:
 
 
 def summarize_deepseek(events: list[dict]) -> None:
-    key = os.environ["DEEPSEEK_API_KEY"]
+    key = os.environ["DEEPSEEK_API_KEY"].strip().strip('"\'')  # por si se pegó con espacios o comillas
     model = os.environ.get("DEEPSEEK_MODEL", "deepseek-flash")
     for ev in events:
         try:
