@@ -1,0 +1,20 @@
+# APIs-Google User Agent
+<https://developers.google.com/crawling/docs/crawlers-fetchers/apis-user-agent>
+
+# APIs-Google user agent
+APIs-Google is the user agent used by Google APIs to deliver push notification messages. Application developers can configure these notifications to avoid continually polling Google's servers to find out if the resources they are interested in have changed.
+## How APIs-Google accesses your site
+APIs-Google sends each push notification using an HTTPS POST request. If the request fails due to an error condition that might be temporary, APIs-Google will resend the notification. If the request still doesn't succeed, it will continue to retry—based on an exponential backoff schedule—up to a maximum of several days.
+The rate at which APIs-Google accesses your site varies by how many push notification requests were created for servers on your site, by how fast the monitored resources are getting updated, and by the number of retries occurring. As a result, the APIs-Google traffic patterns can be consistent in some scenarios, but in other scenarios the traffic can be sporadic or spiky.
+## Prepare your site for APIs-Google
+APIs-Google uses HTTPS to deliver push notifications, so it requires your site to have a valid SSL certificate. Invalid certificates include the following:
+- Self-signed certificates.
+- Certificates signed by an untrusted source.
+- Certificates that have been revoked.
+Avoid unnecessary retry requests by ensuring that your application is well-designed and responds promptly to notification messages (within seconds).
+## Prevent APIs-Google from calling your site
+Because APIs-Google delivers user-configured webhook notifications, it ignores robots.txt rules. To stop APIs-Google requests to your site, do one of the following:
+- Ask whoever set up notifications to disable them. If you administer a domain that has subdomains or URL subspaces that are owned or administered separately, one of the subdomain owners may have set up an application that uses push notifications. If you want to stop APIs-Google, contact anyone who might have set up an application like this and ask them to disable it.
+- Report unexpected push requests. Some services, such as Cloud Pub/Sub push subscriptions, don't require domain ownership verification when configuring a push endpoint. If your server receives unexpected push requests that weren't configured by your organization, report them using the Report suspected abuse on Google Cloud form.
+## Verify the caller
+If you suspect that you are receiving spoofed requests, you can verify that a bot accessing your server really is calling from Google. As with other Google crawlers and fetchers, search your logs for any IP addresses identifying themselves as the APIs-Google user agent; a reverse DNS lookup shows the google.com or gae.googleusercontent.com domain.
