@@ -449,17 +449,59 @@ SYSTEM_PROMPT = (
 )
 
 
+MAX_CONTEXT_CHARS = 400_000
+
+
 def summarize(events: list[dict]) -> None:
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    """Añade ev['summary']. Usa DeepSeek si hay DEEPSEEK_API_KEY; si no, Claude
+    si hay ANTHROPIC_API_KEY; si no hay ninguna, los avisos van sin resumen."""
+    pending = [ev for ev in events if ev["context"]]
+    for ev in pending:
+        if len(ev["context"]) > MAX_CONTEXT_CHARS:
+            ev["summary"] = "(El cambio es demasiado grande para resumirlo automáticamente.)"
+    pending = [ev for ev in pending if "summary" not in ev]
+    if not pending:
         return
+    if os.environ.get("DEEPSEEK_API_KEY"):
+        summarize_deepseek(pending)
+    elif os.environ.get("ANTHROPIC_API_KEY"):
+        summarize_claude(pending)
+
+
+def summarize_deepseek(events: list[dict]) -> None:
+    key = os.environ["DEEPSEEK_API_KEY"]
+    model = os.environ.get("DEEPSEEK_MODEL", "deepseek-flash")
+    for ev in events:
+        try:
+            r = SESSION.post(
+                "https://api.deepseek.com/chat/completions", timeout=120,
+                headers={"Authorization": f"Bearer {key}"},
+                json={"model": model,
+                      "messages": [{"role": "system", "content": SYSTEM_PROMPT},
+                                   {"role": "user", "content": ev["context"]}],
+                      "thinking": {"type": "disabled"},
+                      "max_tokens": 1000,
+                      "temperature": 0.3,
+                      "stream": False})
+            if r.status_code != 200:
+                print(f"::warning::DeepSeek respondió {r.status_code} al resumir "
+                      f"«{ev['title']}»: {r.text[:300]}")
+                if r.status_code in (401, 402, 403):   # key mala o sin saldo: no insistir
+                    return
+                continue
+            choice = r.json()["choices"][0]
+        except (requests.RequestException, ValueError, KeyError, IndexError) as e:
+            print(f"::warning::DeepSeek no pudo resumir «{ev['title']}»: {e}")
+            continue
+        text = (choice.get("message") or {}).get("content") or ""
+        if choice.get("finish_reason") in ("stop", "length") and text.strip():
+            ev["summary"] = text.strip()
+
+
+def summarize_claude(events: list[dict]) -> None:
     import anthropic
     client = anthropic.Anthropic()
     for ev in events:
-        if not ev["context"]:
-            continue
-        if len(ev["context"]) > 400_000:
-            ev["summary"] = "(El cambio es demasiado grande para resumirlo automáticamente.)"
-            continue
         try:
             resp = client.beta.messages.create(
                 model="claude-opus-5-5",
@@ -584,7 +626,7 @@ def main() -> int:
                            "ejemplo» y ha quitado «línea eliminada de ejemplo».")
         summarize([ev])
         notify([ev], args.dry_run)
-        print("Resumen de Claude: " + (ev.get("summary") or "(no configurado o sin respuesta)"))
+        print("Resumen IA: " + (ev.get("summary") or "(no configurado o sin respuesta)"))
         return 0
 
     checks = []

@@ -35,12 +35,19 @@ que quieras (puedes usar los dos a la vez).
    `google-search-7f3k9q2m`. El nombre hace de contraseña: quien lo sepa puede leer los avisos.
 3. Crea el secret `NTFY_TOPIC` con ese nombre.
 
-### Opcional: resumen en español con Claude
+### Opcional: resumen en español con IA
 
-Crea el secret `ANTHROPIC_API_KEY` con una API key de <https://console.anthropic.com>. Cada aviso
-llevará 2–4 frases explicando qué ha cambiado y qué implica para SEO. Solo se llama a Claude
-cuando hay un cambio real, así que el coste es de céntimos al mes. Sin la key, los avisos llegan
-igual, con el diff pero sin el resumen.
+Cada aviso puede llevar 2–4 frases explicando qué ha cambiado y qué implica para SEO. Solo se
+llama al modelo cuando hay un cambio real, así que el coste es de céntimos al mes. Crea **uno** de
+estos secrets:
+
+- `DEEPSEEK_API_KEY`: una key de <https://platform.deepseek.com/api_keys>. Usa `deepseek-flash`
+  sin modo de razonamiento. Para cambiar de modelo, crea una variable `DEEPSEEK_MODEL` (por
+  ejemplo `deepseek-v4-pro`).
+- `ANTHROPIC_API_KEY`: una key de <https://console.anthropic.com>. Usa Claude Opus 5.5.
+
+Si existen las dos, se usa DeepSeek. Sin ninguna, los avisos llegan igual, con el diff pero sin
+el resumen.
 
 ### Probar
 
