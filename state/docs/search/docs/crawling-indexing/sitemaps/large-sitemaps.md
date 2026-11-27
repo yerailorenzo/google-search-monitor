@@ -8,6 +8,7 @@ The XML format of a sitemap index file is very similar to the XML format of a si
 The referenced sitemaps must be hosted on the same site as your sitemap index file. This requirement is waived if you set up cross-site submission.
 Sitemaps that are referenced in the sitemap index file must be in the same directory as the sitemap index file, or lower in the site hierarchy. For example, if the sitemap index file is at https://example.com/public/sitemap_index.xml, it can only contain sitemaps that are in the same or deeper directory, like https://example.com/public/shared/....
 You can submit up to 500 sitemap index files for each site in your Search Console account.
+A sitemap index file can only list individual sitemaps; nested sitemap index files (a sitemap index file that references another sitemap index file) aren't supported.
 ## Example sitemap index
 The following example shows a sitemap index in XML format that lists two sitemaps:
     <?xml version="1.0" encoding="UTF-8"?>
