@@ -5,6 +5,13 @@
 This page details the latest major updates made to the Google Search Central documentation.
 To get the latest Search Central documentation updates delivered to you, add the URL of this page to your feed reader, or add the feed URL directly: https://developers.google.com/search/updates/search_docs_updates.rss.
 ## November 2026
+November 27
+### Ported still-relevant guidance from 2005 blog posts
+What: Ported information that's still relevant today from our oldest blog posts (from 2005!) to our sitemaps documentation, such as that nested sitemap index files aren't supported and HTML sitemaps can't be submitted in Search Console.
+Why: To preserve still-accurate guidance from early Search Central blog posts in our documentation.
+### Expanded guidance on handling 404 errors
+What: Updated the crawling errors troubleshooting guide with a video and guidance on when to ignore 404 errors, how 404 URLs affect crawl budget, updating sitemaps for removed URLs, and avoiding common pitfalls such as blocking 404 pages in robots.txt or redirecting them to your home page.
+Why: To consolidate our 404 troubleshooting guidance from the Search Console Help Center (now redirecting) into Search Central documentation.
 November 24
 ### Added a ranking section to the Search Central documentation
 What: Added a ranking section to the Search Central documentation, which includes the following new pages:
